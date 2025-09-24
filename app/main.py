@@ -2,7 +2,12 @@ from typing import List, Tuple, Optional, Dict
 
 
 class Deck:
-    def __init__(self, row_index: int, col_index: int, is_alive: bool = True) -> None:
+    def __init__(
+        self,
+        row_index: int,
+        col_index: int,
+        is_alive: bool = True
+    ) -> None:
         self.row_index = row_index
         self.col_index = col_index
         self.is_alive = is_alive
@@ -18,13 +23,16 @@ class Ship:
     def __init__(
         self,
         start: Tuple[int, int],
-        end: Tuple[int, int],
+        end: Tuple[int, int]
     ) -> None:
         self.is_drowned: bool = False
         self.decks: List[Deck] = self.create_decks(start, end)
 
     @staticmethod
-    def create_decks(start: Tuple[int, int], end: Tuple[int, int]) -> List[Deck]:
+    def create_decks(
+        start: Tuple[int, int],
+        end: Tuple[int, int]
+    ) -> List[Deck]:
         decks: List[Deck] = []
         row_start, row_end = sorted([start[0], end[0]])
         col_start, col_end = sorted([start[1], end[1]])
@@ -38,7 +46,11 @@ class Ship:
                 decks.append(Deck(row_index, col_index))
         return decks
 
-    def get_deck(self, row_index: int, col_index: int) -> Optional[Deck]:
+    def get_deck(
+        self,
+        row_index: int,
+        col_index: int
+    ) -> Optional[Deck]:
         for deck in self.decks:
             if deck.row_index == row_index and deck.col_index == col_index:
                 return deck
@@ -57,7 +69,8 @@ class Ship:
 
 class Battleship:
     def __init__(
-        self, ships: List[Tuple[Tuple[int, int], Tuple[int, int]]]
+        self,
+        ships: List[Tuple[Tuple[int, int], Tuple[int, int]]]
     ) -> None:
         self.ships: List[Ship] = []
         self.field: Dict[Tuple[int, int], Deck] = {}
@@ -72,7 +85,8 @@ class Battleship:
             for deck in ship.decks:
                 if (deck.row_index, deck.col_index) in self.field:
                     raise ValueError(
-                        f"Overlapping ships at: {deck.row_index},{deck.col_index}"
+                        f"Overlapping ships at: {deck.row_index}, "
+                        f"{deck.col_index}"
                     )
                 self.field[(deck.row_index, deck.col_index)] = deck
 
@@ -95,14 +109,15 @@ class Battleship:
                 field_grid[row_index][col_index] = "□"
             else:
                 ship = next(s for s in self.ships if deck in s.decks)
-                field_grid[row_index][col_index] = "x" if ship.is_drowned else "*"
+                field_grid[row_index][col_index] = (
+                    "x" if ship.is_drowned else "*"
+                )
 
         for row in field_grid:
             print(" ".join(row))
 
     def _validate_field(self) -> None:
         """Проверяет все условия по ТЗ: количество кораблей и соседство"""
-        # Проверка количества кораблей по размерам
         count_by_size = {}
         for ship in self.ships:
             size = len(ship.decks)
@@ -114,7 +129,6 @@ class Battleship:
            count_by_size.get(4, 0) != 1:
             raise ValueError("Invalid ship distribution")
 
-        # Проверка соседних клеток
         directions = [
             (-1, -1), (-1, 0), (-1, 1),
             (0, -1), (0, 0), (0, 1),
@@ -126,5 +140,6 @@ class Battleship:
                 neighbor = (row_index + d_row, col_index + d_col)
                 if neighbor in occupied and neighbor != (row_index, col_index):
                     raise ValueError(
-                        f"Ships too close at {row_index},{col_index} and {neighbor[0]},{neighbor[1]}"
+                        f"Ships too close at {row_index}, {col_index} and "
+                        f"{neighbor[0]}, {neighbor[1]}"
                     )
