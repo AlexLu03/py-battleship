@@ -2,7 +2,12 @@ from typing import List, Tuple, Optional, Dict
 
 
 class Deck:
-    def __init__(self, row_index: int, col_index: int, is_alive: bool = True) -> None:
+    def __init__(
+        self,
+        row_index: int,
+        col_index: int,
+        is_alive: bool = True
+    ) -> None:
         self.row_index = row_index
         self.col_index = col_index
         self.is_alive = is_alive
@@ -15,14 +20,21 @@ class Deck:
 
 
 class Ship:
-    def __init__(self, start: Tuple[int, int], end: Tuple[int, int]) -> None:
+    def __init__(
+        self,
+        start: Tuple[int, int],
+        end: Tuple[int, int]
+    ) -> None:
         self.is_drowned: bool = False
         self.decks: List[Deck] = self.create_decks(start, end)
         if not self.decks:
             raise ValueError(f"Invalid ship: {start}-{end}")
 
     @staticmethod
-    def create_decks(start: Tuple[int, int], end: Tuple[int, int]) -> List[Deck]:
+    def create_decks(
+        start: Tuple[int, int],
+        end: Tuple[int, int]
+    ) -> List[Deck]:
         r1, c1 = start
         r2, c2 = end
 
@@ -34,8 +46,7 @@ class Ship:
 
         if row_start == row_end:
             return [Deck(row_start, c) for c in range(col_start, col_end + 1)]
-        else:
-            return [Deck(r, col_start) for r in range(row_start, row_end + 1)]
+        return [Deck(r, col_start) for r in range(row_start, row_end + 1)]
 
     def get_deck(self, row_index: int, col_index: int) -> Optional[Deck]:
         for deck in self.decks:
@@ -55,11 +66,14 @@ class Ship:
             if deck.is_alive:
                 deck.fire()
             return self.status()
-        return ""  # Если клетки нет, Battleship.fire обработает как "Miss!"
+        return ""  # Battleship.fire вернёт "Miss!"
 
 
 class Battleship:
-    def __init__(self, ships: List[Tuple[Tuple[int, int], Tuple[int, int]]]) -> None:
+    def __init__(
+        self,
+        ships: List[Tuple[Tuple[int, int], Tuple[int, int]]]
+    ) -> None:
         self.ships: List[Ship] = []
         self.field: Dict[Tuple[int, int], Deck] = {}
 
@@ -67,9 +81,15 @@ class Battleship:
             ship = Ship(start, end)
             for deck in ship.decks:
                 if not (0 <= deck.row_index <= 9 and 0 <= deck.col_index <= 9):
-                    raise ValueError(f"Deck out of bounds: {deck.row_index},{deck.col_index}")
+                    raise ValueError(
+                        f"Deck out of bounds: {deck.row_index}, "
+                        f"{deck.col_index}"
+                    )
                 if (deck.row_index, deck.col_index) in self.field:
-                    raise ValueError(f"Overlapping ships at {deck.row_index},{deck.col_index}")
+                    raise ValueError(
+                        f"Overlapping ships at {deck.row_index}, "
+                        f"{deck.col_index}"
+                    )
                 self.field[(deck.row_index, deck.col_index)] = deck
             self.ships.append(ship)
 
@@ -116,5 +136,6 @@ class Battleship:
                 neighbor = (row_index + d_row, col_index + d_col)
                 if neighbor in occupied and neighbor != (row_index, col_index):
                     raise ValueError(
-                        f"Ships too close at {row_index},{col_index} and {neighbor[0]},{neighbor[1]}"
+                        f"Ships too close at {row_index}, {col_index} "
+                        f"and {neighbor[0]}, {neighbor[1]}"
                     )
